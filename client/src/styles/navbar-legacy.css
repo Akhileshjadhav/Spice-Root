@@ -1,0 +1,135 @@
+.legacy-navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 40;
+  width: 100%;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+}
+
+.legacy-navbar-inner {
+  width: min(1240px, calc(100% - 32px));
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 16px 0;
+}
+
+.legacy-brand {
+  font-family: "Cormorant Garamond", serif;
+  font-size: 2rem;
+  font-weight: 700;
+  color: #7c3aed;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.legacy-brand:hover {
+  transform: scale(1.04);
+  color: #6d28d9;
+}
+
+.legacy-nav-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  flex: 1;
+}
+
+.legacy-nav-links button {
+  border: 0;
+  background: transparent;
+  color: #4b5563;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, color 0.2s ease;
+}
+
+.legacy-nav-links button:hover,
+.legacy-nav-links button.active {
+  color: #7c3aed;
+  transform: scale(1.05);
+}
+
+.legacy-nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.legacy-user-greeting {
+  color: #7c3aed;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.legacy-login-button,
+.legacy-cart-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 16px;
+  border-radius: 999px;
+  font-weight: 700;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.legacy-login-button {
+  border: 1px solid #7c3aed;
+  background: #7c3aed;
+  color: #ffffff;
+}
+
+.legacy-login-button:hover {
+  transform: scale(1.04);
+  background: #6d28d9;
+  box-shadow: 0 10px 20px rgba(124, 58, 237, 0.18);
+}
+
+.legacy-cart-button {
+  border: 1px solid #d1d5db;
+  background: #ffffff;
+  color: #374151;
+}
+
+.legacy-cart-button:hover {
+  transform: scale(1.04);
+  background: #f3f4f6;
+}
+
+.legacy-navbar-spacer {
+  height: 86px;
+}
+
+@media (max-width: 900px) {
+  .legacy-navbar-inner {
+    width: min(100%, calc(100% - 20px));
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .legacy-nav-links {
+    order: 3;
+    width: 100%;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+
+  .legacy-nav-actions {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .legacy-navbar-spacer {
+    height: 128px;
+  }
+}

@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "installCommand": "npm --prefix client install",
+  "buildCommand": "node scripts/build-client.mjs",
+  "outputDirectory": "client/dist",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}

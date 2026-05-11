@@ -1,0 +1,268 @@
+[
+  {
+    "id": "mirchi-powder",
+    "name": "Mirchi Powder",
+    "price": 550,
+    "category": "Masala",
+    "image": "/images/mirchi.png",
+    "unit": "1 KG",
+    "featured": true,
+    "description": "Bold red chilli powder with clean heat and rich color for curries and tadkas.",
+    "story": "Ground for vibrant color, fast aroma release, and a fiery finish that stays clean on the palate.",
+    "rating": 4.9,
+    "ratingCount": 201,
+    "sizes": ["200g", "400g", "1kg"],
+    "highlights": [
+      "Organic and high quality",
+      "Robust spice-forward flavor",
+      "Farm fresh sourced"
+    ]
+  },
+  {
+    "id": "lahsun-mirchi-masala",
+    "name": "Lahsun Mirchi Masala",
+    "price": 600,
+    "category": "Masala",
+    "image": "/images/lahsun.png",
+    "unit": "1 KG",
+    "featured": true,
+    "description": "Garlic-forward spice blend with smoky punch, perfect for fries and stir-fry.",
+    "story": "A fast flavor booster built for chutneys, stir-fry, fries, and any dish that needs a garlicky kick.",
+    "rating": 4.8,
+    "ratingCount": 168,
+    "sizes": ["200g", "400g", "1kg"],
+    "highlights": [
+      "Smoky and savory profile",
+      "Balanced chilli heat",
+      "Ideal for quick everyday cooking"
+    ]
+  },
+  {
+    "id": "turmeric-colour",
+    "name": "Turmeric Powder (Colour)",
+    "price": 300,
+    "category": "Masala",
+    "image": "/images/haldi.png",
+    "unit": "1 KG",
+    "featured": true,
+    "description": "Bright turmeric for vibrant color in dals, curries, and daily cooking.",
+    "story": "Designed for vivid golden tones and dependable daily use across Indian home kitchens.",
+    "rating": 4.9,
+    "ratingCount": 142,
+    "sizes": ["200g", "400g", "1kg"],
+    "highlights": [
+      "Strong natural color",
+      "Clean earthy aroma",
+      "Great for curries and tadkas"
+    ]
+  },
+  {
+    "id": "turmeric-aromatic",
+    "name": "Turmeric Powder (Aromatic)",
+    "price": 320,
+    "category": "Masala",
+    "image": "/images/haldi.png",
+    "unit": "1 KG",
+    "featured": true,
+    "description": "Aromatic haldi with warm earthy notes, crafted for premium home kitchens.",
+    "story": "A softer fragrant turmeric that layers warmth into sabzis, dals, and milk blends.",
+    "rating": 4.7,
+    "ratingCount": 119,
+    "sizes": ["200g", "400g", "1kg"],
+    "highlights": [
+      "Earthy warm aroma",
+      "Smooth daily cooking finish",
+      "Premium kitchen staple"
+    ]
+  },
+  {
+    "id": "turmeric-colour-aromatic",
+    "name": "Turmeric Powder (Colour + Aromatic)",
+    "price": 350,
+    "category": "Masala",
+    "image": "/images/haldi.png",
+    "unit": "1 KG",
+    "featured": false,
+    "description": "Balanced turmeric combining deep aroma and bold golden color.",
+    "story": "Built for cooks who want both visual richness and a warmer aromatic finish in one blend.",
+    "rating": 4.8,
+    "ratingCount": 97,
+    "sizes": ["200g", "400g", "1kg"],
+    "highlights": [
+      "Balanced aroma and color",
+      "Smooth pantry essential",
+      "Versatile for everyday meals"
+    ]
+  },
+  {
+    "id": "garam-masala",
+    "name": "Garam Masala",
+    "price": 450,
+    "category": "Masala",
+    "image": "/images/garam.png",
+    "unit": "1 KG",
+    "featured": false,
+    "description": "Layered whole-spice blend that adds warmth and complexity to rich gravies.",
+    "story": "A rounded finishing masala with toasted whole-spice depth made for richer dinner dishes.",
+    "rating": 4.9,
+    "ratingCount": 184,
+    "sizes": ["200g", "400g", "1kg"],
+    "highlights": [
+      "Warm and layered finish",
+      "Ideal for gravies and pulao",
+      "Deep whole-spice character"
+    ]
+  },
+  {
+    "id": "besan",
+    "name": "Besan",
+    "price": 200,
+    "category": "Flour",
+    "image": "/images/besan.png",
+    "unit": "1 KG",
+    "featured": false,
+    "description": "Fine gram flour for crispy pakoras, laddoos, and smooth batters.",
+    "story": "Smooth and nutty gram flour that performs beautifully in both savory and sweet recipes.",
+    "rating": 4.8,
+    "ratingCount": 123,
+    "sizes": ["500g", "1kg", "5kg"],
+    "highlights": [
+      "Fine clean milling",
+      "Great for batters and sweets",
+      "Consistent kitchen texture"
+    ]
+  },
+  {
+    "id": "rice-flour",
+    "name": "Rice Flour",
+    "price": 50,
+    "category": "Flour",
+    "image": "/images/rice.png",
+    "unit": "1 KG",
+    "featured": false,
+    "description": "Light rice flour suited for snacks, coatings, and gluten-light recipes.",
+    "story": "A lighter flour option with crisp performance in coating, snack, and breakfast preparations.",
+    "rating": 4.6,
+    "ratingCount": 73,
+    "sizes": ["500g", "1kg", "5kg"],
+    "highlights": [
+      "Light crisp texture",
+      "Useful for snacks and batters",
+      "Smooth pantry basic"
+    ]
+  },
+  {
+    "id": "wheat-flour",
+    "name": "Wheat Flour",
+    "price": 80,
+    "category": "Flour",
+    "image": "/images/wheat.png",
+    "unit": "1 KG",
+    "featured": false,
+    "description": "Everyday wheat flour with dependable texture for soft and fluffy rotis.",
+    "story": "Stone-milled style everyday atta made for softness, stretch, and dependable roti texture.",
+    "rating": 4.7,
+    "ratingCount": 89,
+    "sizes": ["1kg", "5kg", "10kg"],
+    "highlights": [
+      "Soft everyday rotis",
+      "Dependable dough strength",
+      "Clean staple pantry base"
+    ]
+  },
+  {
+    "id": "bajara-flour",
+    "name": "Bajara Flour",
+    "price": 100,
+    "category": "Flour",
+    "image": "/images/bajara.png",
+    "unit": "1 KG",
+    "featured": false,
+    "description": "Nutty millet flour ideal for rustic rotlas and wholesome meal prep.",
+    "story": "A richer millet flour with rustic body and a warm nutty finish for traditional flatbreads.",
+    "rating": 4.6,
+    "ratingCount": 58,
+    "sizes": ["500g", "1kg", "5kg"],
+    "highlights": [
+      "Rustic millet flavor",
+      "Wholesome meal support",
+      "Traditional kitchen favorite"
+    ]
+  },
+  {
+    "id": "jowar-flour",
+    "name": "Jowar Flour",
+    "price": 120,
+    "category": "Flour",
+    "image": "/images/jowar.png",
+    "unit": "1 KG",
+    "featured": false,
+    "description": "Sorghum flour with clean taste and soft bite for traditional flatbreads.",
+    "story": "Clean sorghum flour with soft bite and a subtle grain note for lighter traditional breads.",
+    "rating": 4.7,
+    "ratingCount": 61,
+    "sizes": ["500g", "1kg", "5kg"],
+    "highlights": [
+      "Soft flatbread texture",
+      "Clean sorghum taste",
+      "Reliable everyday flour"
+    ]
+  },
+  {
+    "id": "nachani-flour",
+    "name": "Nachani Flour",
+    "price": 140,
+    "category": "Flour",
+    "image": "/images/nachani.png",
+    "unit": "1 KG",
+    "featured": false,
+    "description": "Ragi flour rich in nutrition, perfect for bhakri, porridges, and snacks.",
+    "story": "A nutrient-rich ragi flour with earthy depth for wholesome breakfasts and traditional meals.",
+    "rating": 4.8,
+    "ratingCount": 70,
+    "sizes": ["500g", "1kg", "5kg"],
+    "highlights": [
+      "Ragi-rich nutrition",
+      "Ideal for bhakri and porridge",
+      "Earthy wholesome flavor"
+    ]
+  },
+  {
+    "id": "poha",
+    "name": "Poha",
+    "price": 120,
+    "category": "Pantry",
+    "image": "/images/poha.png",
+    "unit": "1 KG",
+    "featured": false,
+    "description": "Flattened rice flakes with light texture for quick breakfasts and snack mixes.",
+    "story": "Soft-flake poha made for quick breakfasts, chivda, and pantry convenience without losing texture.",
+    "rating": 4.7,
+    "ratingCount": 64,
+    "sizes": ["500g", "1kg", "5kg"],
+    "highlights": [
+      "Quick breakfast favorite",
+      "Light and soft flakes",
+      "Great for snack mixes"
+    ]
+  },
+  {
+    "id": "chana-dal",
+    "name": "Chana Dal",
+    "price": 150,
+    "category": "Pantry",
+    "image": "/images/chana-dal.png",
+    "unit": "1 KG",
+    "featured": false,
+    "description": "Clean split Bengal gram for dal, farsan, tempering, and snack prep.",
+    "story": "A pantry essential with satisfying bite and dependable quality for savory cooking and snacks.",
+    "rating": 4.8,
+    "ratingCount": 77,
+    "sizes": ["500g", "1kg", "5kg"],
+    "highlights": [
+      "Clean split gram quality",
+      "Versatile pantry use",
+      "Excellent texture after cooking"
+    ]
+  }
+]

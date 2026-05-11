@@ -1,0 +1,1287 @@
+SPICE ROOT PRODUCTION WEBSITE WORKFLOW DOCUMENTATION
+====================================================
+
+Document purpose
+----------------
+This document explains the complete production-level workflow for the Spice Root website from scratch.
+It covers planning, architecture, pages, user flows, admin flows, Firebase data, contact reply notifications,
+Razorpay test payments, security, testing, deployment, launch, and maintenance.
+
+Project name: Spice Root
+Website type: Customer e-commerce/catalog website with admin dashboard
+Frontend stack: React, Vite, React Router, Firebase, Firestore
+Styling: Custom CSS modules/files
+Authentication: Firebase Authentication
+Database: Cloud Firestore
+Storage: Firebase Storage
+Payment gateway: Razorpay test checkout
+Admin panel: Custom React admin dashboard
+
+
+1. PROJECT GOALS
+----------------
+The website must allow customers to:
+
+1. Browse Spice Root products.
+2. View product details.
+3. Register and log in.
+4. Add products to cart.
+5. Checkout with delivery details.
+6. Complete Razorpay test payment before order placement.
+7. View order history.
+8. Contact the admin/team using Contact Us.
+9. Receive notification when admin replies to a contact query.
+10. Read admin replies and clear notification state.
+11. Submit product/store reviews after delivered orders.
+
+The admin panel must allow admins to:
+
+1. Log in through the admin route.
+2. View dashboard KPIs.
+3. Manage products.
+4. Manage categories.
+5. View orders.
+6. Update order status.
+7. View payments and revenue.
+8. View customers.
+9. View customer details.
+10. View and reply to contact queries.
+11. Manage reviews.
+12. Track inventory.
+13. View notification panels for new orders and new queries.
+
+
+2. RECOMMENDED PROJECT STRUCTURE
+--------------------------------
+Current project root:
+
+D:\Spice Root
+
+Frontend app:
+
+D:\Spice Root\frontend
+
+Important folders:
+
+frontend/
+  public/
+    data/
+    images/
+    videos/
+  src/
+    admin/
+      components/
+      data/
+      pages/
+      routes/
+      styles/
+      utils/
+    assets/
+    components/
+    context/
+    content/
+    lib/
+    pages/
+    styles/
+    user/
+      components/
+      pages/
+      routes/
+  firestore.rules
+  package.json
+  vite.config.js
+  .env
+  .env.local
+
+
+3. MAIN TECHNOLOGY WORKFLOW
+---------------------------
+Frontend:
+
+1. React renders all customer and admin UI.
+2. React Router controls website navigation.
+3. Vite builds and serves the app.
+4. Firebase Auth handles login/register.
+5. Firestore stores users, carts, orders, products, reviews, contact queries, notifications, and payments.
+6. Firebase Storage is used for product media when needed.
+7. Razorpay test checkout opens from the checkout page.
+
+Backend:
+
+This app currently uses Firebase client SDK and Firestore security rules instead of a custom backend.
+For production-grade real Razorpay verification, add a backend or Firebase Cloud Functions because payment
+signature verification requires a secret key that must never run in browser code.
+
+
+4. ROUTE MAP
+------------
+Customer routes:
+
+/                         Home / startup landing page
+/products                 Product listing
+/products/:productId      Product detail page
+/cart                     Customer cart, protected
+/checkout                 Checkout and Razorpay test payment, protected
+/contact                  Contact Us page
+/login                    Customer login
+/register                 Customer registration
+/forgot-password          Password reset
+/account                  Customer account, orders, reviews, admin replies
+
+Admin routes:
+
+/admin/login              Admin login
+/admin/dashboard          Dashboard and KPIs
+/admin/products           Product management
+/admin/categories         Category management
+/admin/orders             Order management
+/admin/payments           Payment records and revenue
+/admin/customers          Customer list
+/admin/customers/:id      Customer details, if routed
+/admin/queries            Contact query management
+/admin/reviews            Review management
+/admin/inventory          Inventory view
+/admin/coupons            Coupon area
+/admin/cms                CMS/content area
+/admin/settings           Settings
+/admin/users              Admin users
+
+
+5. CUSTOMER WEBSITE WORKFLOW
+----------------------------
+
+5.1 Home page
+
+Purpose:
+The home page introduces Spice Root, highlights products, builds trust, and routes users to Products,
+Contact, Login, or Register.
+
+Expected behavior:
+
+1. Navbar stays visible.
+2. Logged-out users see Login and Register.
+3. Logged-in customers see greeting, cart icon, notification icon when unread admin replies exist, and Logout.
+4. Admin users should not use customer flows.
+5. Product and contact CTAs route correctly.
+
+
+5.2 Products page
+
+Purpose:
+Users browse the live catalog.
+
+Expected behavior:
+
+1. Products are loaded from Firestore when available.
+2. Fallback catalog is used if live catalog fails.
+3. Search filters products by name/category.
+4. Category filter narrows visible products.
+5. Product cards route to detail page.
+6. Customer navbar includes notification bell when unread replies exist.
+
+
+5.3 Product detail page
+
+Purpose:
+Users inspect one product, select size/quantity, read reviews, and add to cart.
+
+Expected behavior:
+
+1. Route param identifies product.
+2. If product not found, show a useful empty state.
+3. User can select size tier where available.
+4. User can update quantity.
+5. Add to Cart requires customer login.
+6. Existing approved reviews display.
+7. Review submission is restricted to customer context.
+
+
+5.4 Cart page
+
+Purpose:
+Users review cart items before checkout.
+
+Expected behavior:
+
+1. Cart shows all selected products.
+2. Users can increase quantity.
+3. Users can decrease quantity.
+4. Users can remove items.
+5. Subtotal and total update immediately.
+6. Proceed to Checkout routes to /checkout.
+7. Empty cart shows recent orders and browse links.
+
+
+5.5 Checkout page
+
+Purpose:
+Users enter delivery details, complete Razorpay test payment, and only then place the order.
+
+Required fields:
+
+1. Full name
+2. Mobile number
+3. Alternate mobile number, optional
+4. Address line 1
+5. Address line 2, optional
+6. City
+7. State
+8. Pincode
+9. Delivery instructions, optional
+
+Validation:
+
+1. Full name is required.
+2. Mobile number must be 10 digits.
+3. Alternate mobile number, when provided, must be 10 digits.
+4. Address line 1 is required.
+5. City is required.
+6. State is required.
+7. Pincode must be 6 digits.
+8. Cart must not be empty.
+9. User must be authenticated.
+
+Payment flow:
+
+1. User fills valid delivery form.
+2. App saves customer profile details when possible.
+3. App prepares order payload in memory.
+4. App opens Razorpay test checkout.
+5. If user closes payment modal, no order is created.
+6. If test payment fails, no order is created.
+7. If test payment succeeds, order is written to Firestore.
+8. Cart is cleared.
+9. Success view displays the newly placed order.
+10. Order appears in user order history.
+11. Admin can see order.
+12. Admin can see payment record and revenue.
+
+Important production note:
+Current Razorpay integration is test/demo mode only. A real production Razorpay integration must use a server-side
+order creation endpoint and server-side signature verification. The Razorpay secret key must never be exposed in client JavaScript.
+
+
+5.6 Account page
+
+Purpose:
+Users view profile, orders, reviews, and admin replies.
+
+Expected behavior:
+
+1. User sees name, email, and session state.
+2. User can sign out.
+3. Order history is shown.
+4. Delivered orders become reviewable.
+5. Admin replies can be viewed.
+6. Opening replies marks them as seen.
+
+
+5.7 Contact Us page
+
+Purpose:
+Users submit queries/messages to admin.
+
+Fields:
+
+1. Name
+2. Email
+3. Message
+
+Firestore write:
+
+Collection: contactSubmissions
+
+Default create fields:
+
+userId: current user uid or null
+name: submitted name
+email: submitted email
+message: submitted message
+status: "new"
+adminSeen: false
+adminReply: ""
+adminReplyAt: null
+userReplySeen: true
+createdAt: server timestamp
+updatedAt: server timestamp
+
+Expected behavior:
+
+1. User submits query.
+2. Admin sees query in admin panel.
+3. Admin opens query.
+4. Admin replies.
+5. Contact submission gets adminReply, adminReplyAt, status, userReplySeen false.
+6. User sees notification bell in top navigation.
+7. User clicks notification.
+8. Reply popup opens above header/navbar.
+9. Reply is marked as seen.
+10. Notification icon/count disappears.
+
+
+6. USER NOTIFICATION WORKFLOW
+-----------------------------
+
+Problem solved:
+The user was not receiving visible notification from admin replies to Contact Us queries.
+
+Correct source of truth:
+The notification state is now based on contactSubmissions:
+
+adminReply exists
+userReplySeen is false
+
+Notification display rule:
+
+Show bell when:
+
+1. User is logged in.
+2. At least one contact submission belongs to user by userId or email.
+3. Submission has adminReply.
+4. userReplySeen is false.
+
+Notification clear rule:
+
+When user opens notification popup:
+
+1. Popup shows admin reply.
+2. App updates contactSubmissions/{submissionId}.
+3. userReplySeen becomes true.
+4. Bell count disappears after Firestore sync.
+
+Important UI fix:
+The notification popup uses a React portal to render at document body level. This prevents it from being clipped or hidden by the navbar/header stacking context.
+
+
+7. ADMIN WEBSITE WORKFLOW
+-------------------------
+
+7.1 Admin authentication
+
+Purpose:
+Only approved admins should access admin routes.
+
+Admin access should be checked by:
+
+1. Firebase Auth state.
+2. Admin email allowlist.
+3. Firestore admins collection if used.
+4. Protected admin route wrapper.
+
+Admin allowlist is configured through environment variable:
+
+VITE_ADMIN_EMAILS
+
+
+7.2 Admin dashboard
+
+Purpose:
+Show operational health.
+
+KPIs:
+
+1. Paid revenue
+2. Total orders
+3. Inventory alerts
+4. Delivered orders
+5. Recent orders
+6. Top selling products
+7. Revenue trends
+
+Revenue rule:
+Revenue should count paid orders only.
+
+Paid order condition:
+
+paymentStatus == "Paid"
+
+
+7.3 Admin orders
+
+Purpose:
+Admin sees all customer orders.
+
+Data source:
+
+Firestore collection group:
+
+users/{userId}/orders/{orderId}
+
+Admin can:
+
+1. View order list.
+2. Search/filter by available UI.
+3. Open order details.
+4. View customer details.
+5. View payment method.
+6. View payment status.
+7. Update order status.
+
+Order statuses:
+
+pending
+processing
+confirmed
+shipped
+delivered
+cancelled
+
+Production recommendation:
+Use a controlled enum for statuses to avoid inconsistent casing.
+
+
+7.4 Admin payments
+
+Purpose:
+Admin sees payments made and total revenue.
+
+Data source:
+
+Payment rows are derived from live order documents.
+
+Visible columns:
+
+1. Payment ID
+2. Order ID
+3. Customer
+4. Amount
+5. Method
+6. Status
+7. Date
+
+Revenue calculation:
+
+Sum order.total for orders where paymentStatus is "Paid".
+
+Payment method:
+
+Razorpay Test
+
+Payment status:
+
+Paid
+
+Payment mode:
+
+test
+
+Production recommendation:
+In production, store verified payment records in a dedicated payments collection through a trusted backend or Cloud Function.
+
+
+7.5 Admin queries
+
+Purpose:
+Admin reads and replies to Contact Us messages.
+
+Data source:
+
+contactSubmissions
+
+Admin can:
+
+1. View all queries.
+2. Open query details.
+3. Mark query as read.
+4. Write reply.
+5. Send reply.
+
+Reply update fields:
+
+adminReply: reply text
+adminReplyAt: server timestamp
+adminSeen: true
+userReplySeen: false
+status: "Replied"
+updatedAt: server timestamp
+
+Expected result:
+User sees notification bell on next live Firestore sync.
+
+
+7.6 Admin products
+
+Purpose:
+Admin manages product catalog.
+
+Product fields:
+
+1. slug
+2. productName
+3. category
+4. price
+5. basePrice
+6. stock
+7. description
+8. story
+9. ingredients
+10. status
+11. imageUrl
+12. unit
+13. featured
+14. rating
+15. ratingCount
+16. sku
+17. reorderLevel
+18. highlights
+19. sizes
+20. priceTiers
+21. updatedAt
+
+Product workflow:
+
+1. Admin creates or updates product.
+2. Product appears in customer catalog.
+3. Product detail page reads updated product.
+4. Inventory uses product stock and orders to estimate stock movement.
+
+
+7.7 Admin reviews
+
+Purpose:
+Admin moderates reviews.
+
+Review workflow:
+
+1. Customer submits review after delivered order.
+2. Review status starts as pending.
+3. Admin approves or hides review.
+4. Approved reviews show publicly.
+
+
+7.8 Admin customers
+
+Purpose:
+Admin sees customer list, spend, order count, activity, and details.
+
+Data sources:
+
+1. users collection
+2. orders collection group
+3. reviews collection
+
+Customer detail should show:
+
+1. Profile info
+2. Order history
+3. Total spend
+4. Review history
+5. Recent activity
+
+
+8. FIRESTORE DATA MODEL
+-----------------------
+
+8.1 users/{userId}
+
+Purpose:
+Stores customer profile.
+
+Typical fields:
+
+uid
+email
+name
+firstName
+phoneNumber
+alternatePhoneNumber
+addressLine1
+addressLine2
+city
+state
+pincode
+deliveryInstructions
+createdAt
+updatedAt
+isAdmin
+
+
+8.2 users/{userId}/cart/current
+
+Purpose:
+Stores active customer cart.
+
+Fields:
+
+items
+updatedAt
+
+
+8.3 users/{userId}/orders/{orderId}
+
+Purpose:
+Stores customer orders.
+
+Fields:
+
+userId
+customer
+items
+itemCount
+subtotal
+deliveryCharge
+total
+paymentMethod
+paymentStatus
+paymentProvider
+paymentMode
+paymentId
+razorpayOrderId
+razorpaySignature
+paidAt
+status
+createdAt
+updatedAt
+
+Important:
+For real production payment verification, razorpaySignature should be verified server-side before marking paymentStatus as Paid.
+
+
+8.4 products/{productId}
+
+Purpose:
+Stores catalog product.
+
+See Admin Products section for fields.
+
+
+8.5 categories/{categoryId}
+
+Purpose:
+Stores product categories.
+
+Fields:
+
+name
+image
+description
+
+
+8.6 reviews/{reviewId}
+
+Purpose:
+Stores customer reviews.
+
+Fields:
+
+userId
+customerName
+customerEmail
+orderId
+productId
+productName
+type
+rating
+review
+status
+createdAt
+updatedAt
+
+
+8.7 contactSubmissions/{submissionId}
+
+Purpose:
+Stores customer Contact Us queries and admin replies.
+
+Fields:
+
+userId
+name
+email
+message
+status
+adminSeen
+adminReply
+adminReplyAt
+userReplySeen
+createdAt
+updatedAt
+
+
+8.8 adminNotifications/{notificationId}
+
+Purpose:
+Stores admin-facing order notifications.
+
+Fields:
+
+type
+userId
+orderId
+orderDocumentId
+customerName
+customerEmail
+status
+orderStatus
+createdAt
+readAt
+
+
+8.9 admins/{userId}
+
+Purpose:
+Optional admin identity document.
+
+Recommended fields:
+
+uid
+email
+role
+createdAt
+
+
+9. FIRESTORE RULES WORKFLOW
+---------------------------
+
+Rules must ensure:
+
+1. Users can only read/write their own profile, cart, orders, and login events.
+2. Users can create contact submissions.
+3. Users can read their own contact submissions by userId or email.
+4. Users can only mark their own admin replies as seen.
+5. Admins can read and update contact submissions.
+6. Admins can read all orders.
+7. Admins can update order status and payment status only through allowed fields.
+8. Public users can read products and categories.
+9. Admins can create/update/delete products and categories.
+10. Users can submit reviews.
+11. Admins can approve/hide reviews.
+12. Unknown document paths are denied.
+
+Deployment reminder:
+After editing firestore.rules, deploy rules to Firebase before testing live behavior.
+
+
+10. ENVIRONMENT VARIABLES
+-------------------------
+
+Required frontend variables:
+
+VITE_FIREBASE_API_KEY
+VITE_FIREBASE_AUTH_DOMAIN
+VITE_FIREBASE_PROJECT_ID
+VITE_FIREBASE_STORAGE_BUCKET
+VITE_FIREBASE_MESSAGING_SENDER_ID
+VITE_FIREBASE_APP_ID
+VITE_ADMIN_EMAILS
+VITE_RAZORPAY_KEY_ID
+
+Optional:
+
+VITE_API_URL
+
+Razorpay secret:
+
+RAZORPAY_KEY_SECRET must not be exposed to browser code.
+It should only be used in a backend server or Cloud Function.
+
+File policy:
+
+1. .env can contain development config if this is a private local project.
+2. .env.local should stay ignored and local.
+3. Production secrets should be stored in deployment provider secrets.
+4. Never commit live payment secrets.
+
+
+11. RAZORPAY PAYMENT WORKFLOW
+-----------------------------
+
+Current mode:
+Test/demo frontend checkout only.
+
+Current payment behavior:
+
+1. User validates checkout form.
+2. Razorpay checkout script loads.
+3. Test checkout opens.
+4. On success, app receives payment id.
+5. App creates Firestore order.
+6. App sets paymentStatus to Paid.
+7. Admin Payments shows payment record.
+8. Admin Dashboard revenue counts paid order.
+
+Production-ready Razorpay workflow:
+
+1. User clicks Pay.
+2. Frontend sends cart/order summary to backend.
+3. Backend validates price and cart.
+4. Backend creates Razorpay order using key secret.
+5. Frontend opens Razorpay checkout with backend order id.
+6. Razorpay returns payment id, order id, signature.
+7. Frontend sends result to backend.
+8. Backend verifies signature using Razorpay secret.
+9. Backend creates order in Firestore only after verification.
+10. Backend creates payment record.
+11. Backend returns success to frontend.
+12. Frontend clears cart and shows success.
+
+Why server verification is required:
+Browser code can be modified by users. A browser-only payment success callback is acceptable for a demo/test mode,
+but not enough for real money orders.
+
+
+12. SECURITY WORKFLOW
+---------------------
+
+Authentication:
+
+1. Use Firebase Auth.
+2. Protect customer routes.
+3. Protect admin routes.
+4. Prevent admin users from customer checkout.
+5. Use admin allowlist and/or admins collection.
+
+Authorization:
+
+1. Enforce ownership in Firestore rules.
+2. Enforce admin-only writes for admin operations.
+3. Validate allowed fields in rules.
+4. Avoid broad allow read/write.
+
+Secrets:
+
+1. Do not expose Razorpay secret.
+2. Do not expose service account credentials.
+3. Do not commit .env.local.
+4. Use deployment secrets.
+
+Payments:
+
+1. Keep current Razorpay mode as test only.
+2. Add backend verification before real payments.
+3. Do not trust client totals.
+4. Backend should recalculate totals from product data.
+
+Data validation:
+
+1. Validate form fields before writes.
+2. Normalize statuses.
+3. Use serverTimestamp for important write times.
+4. Restrict admin updates to known fields.
+
+
+13. ACCESSIBILITY WORKFLOW
+--------------------------
+
+Every page should include:
+
+1. Semantic buttons for actions.
+2. Links for navigation.
+3. aria-label on icon-only buttons.
+4. Visible focus styles.
+5. Keyboard operability.
+6. Sufficient contrast.
+7. Dialog/popup roles where appropriate.
+8. No text overlap on mobile.
+9. Form labels for all inputs.
+10. Error messages close to fields.
+
+Notification popup:
+
+1. Bell has aria-label.
+2. Popup uses dialog role.
+3. Close button is visible.
+4. Popup renders above navbar.
+
+
+14. SEO WORKFLOW
+----------------
+
+Recommended SEO tasks:
+
+1. Add unique page titles.
+2. Add meta descriptions.
+3. Add Open Graph metadata.
+4. Add favicon.
+5. Add robots.txt.
+6. Add sitemap.xml.
+7. Use descriptive product URLs.
+8. Add product structured data where possible.
+9. Optimize images.
+10. Keep landing page crawlable.
+
+Current app is a Vite SPA. For stronger SEO, consider:
+
+1. Server-side rendering.
+2. Static prerendering.
+3. Next.js migration for product pages.
+4. Dynamic sitemap generation.
+
+
+15. PERFORMANCE WORKFLOW
+------------------------
+
+Targets:
+
+1. Lighthouse performance: 90+
+2. Accessibility: 95+
+3. SEO: 90+
+4. Total blocking time: low
+5. Cumulative layout shift: below 0.1
+6. Initial JS bundle: keep as small as possible
+
+Optimization tasks:
+
+1. Lazy load route pages.
+2. Compress images.
+3. Use optimized image formats.
+4. Avoid unnecessary global libraries.
+5. Split admin code from customer code where possible.
+6. Use Firestore queries carefully.
+7. Avoid subscribing to huge collections on public pages.
+8. Add indexes for Firestore queries if Firebase requests them.
+
+Build warning:
+If Vite reports chunks over 500 KB, consider code-splitting admin routes and Firebase-heavy modules.
+
+
+16. TESTING WORKFLOW
+--------------------
+
+Manual smoke tests:
+
+1. Home page loads.
+2. Products page loads.
+3. Product detail opens.
+4. User can register.
+5. User can log in.
+6. User can add product to cart.
+7. User can update cart quantity.
+8. User can proceed to checkout.
+9. Invalid checkout form shows errors.
+10. Razorpay test checkout opens.
+11. Closing Razorpay does not create order.
+12. Successful Razorpay test payment creates order.
+13. Cart clears after order.
+14. Order appears in account.
+15. Admin sees order.
+16. Admin sees payment.
+17. Admin revenue updates.
+18. Contact form creates query.
+19. Admin sees query.
+20. Admin replies to query.
+21. User sees notification bell.
+22. User opens notification.
+23. Notification popup is visible and above header.
+24. Notification clears after reading.
+25. User can log out.
+
+Admin smoke tests:
+
+1. Admin login works.
+2. Non-admin cannot access admin routes.
+3. Dashboard loads.
+4. Products load.
+5. Orders load.
+6. Payments load.
+7. Queries load.
+8. Query reply works.
+9. Reviews load.
+10. Inventory loads.
+
+Automated tests recommended:
+
+Unit tests:
+
+1. normalizeOrderRecord
+2. buildPaymentRows
+3. isPaidOrder
+4. normalizeContactSubmissionRecord
+5. cart calculations
+6. checkout validation
+
+Integration tests:
+
+1. Contact query creation
+2. Admin reply update
+3. User notification clear
+4. Order creation after payment success
+5. Admin payment row generation
+
+End-to-end tests:
+
+1. Customer checkout journey
+2. Contact reply notification journey
+3. Admin order management journey
+4. Admin payment visibility journey
+
+
+17. BUILD AND DEVELOPMENT COMMANDS
+----------------------------------
+
+Install dependencies:
+
+npm install
+
+Run local development server:
+
+npm run dev
+
+Default local URL:
+
+http://localhost:5173
+
+Build production files:
+
+npm run build
+
+Preview production build:
+
+npm run preview
+
+Lint:
+
+npm run lint
+
+Known lint note:
+At the time of this document, lint may report existing issues in CartContext.jsx and Reveal.jsx. These should be cleaned
+separately as code quality work.
+
+
+18. DEPLOYMENT WORKFLOW
+-----------------------
+
+Recommended deployment options:
+
+1. Firebase Hosting
+2. Vercel
+3. Netlify
+4. Cloudflare Pages
+
+Firebase Hosting workflow:
+
+1. Build the app:
+   npm run build
+
+2. Confirm dist folder is generated:
+   frontend/dist
+
+3. Deploy hosting:
+   firebase deploy --only hosting
+
+4. Deploy Firestore rules:
+   firebase deploy --only firestore:rules
+
+5. Verify routes:
+   /, /products, /cart, /checkout, /account, /admin/login, /admin/dashboard
+
+SPA fallback:
+Hosting must route unknown paths back to index.html.
+
+Production environment:
+
+1. Configure Firebase project.
+2. Configure authorized domains in Firebase Auth.
+3. Configure production environment variables.
+4. Use Razorpay test key for test environment only.
+5. Use real Razorpay keys only after backend verification exists.
+
+
+19. LAUNCH CHECKLIST
+--------------------
+
+Pre-launch:
+
+[ ] Firebase config verified.
+[ ] Firestore rules deployed.
+[ ] Firebase Auth enabled.
+[ ] Admin emails configured.
+[ ] Product catalog populated.
+[ ] Product images load.
+[ ] Contact form tested.
+[ ] Admin reply notification tested.
+[ ] Razorpay test checkout tested.
+[ ] Order creation tested.
+[ ] Payment page tested.
+[ ] Revenue calculation tested.
+[ ] Admin dashboard tested.
+[ ] Mobile layout tested.
+[ ] Browser console checked.
+[ ] Build passes.
+[ ] SEO basics added.
+[ ] Favicon verified.
+[ ] Legal pages added if needed.
+
+Launch:
+
+[ ] Deploy frontend.
+[ ] Deploy Firestore rules.
+[ ] Verify domain.
+[ ] Verify HTTPS.
+[ ] Test customer login.
+[ ] Test admin login.
+[ ] Test one contact reply.
+[ ] Test one Razorpay test order.
+[ ] Monitor Firebase console.
+
+Post-launch:
+
+[ ] Watch error logs.
+[ ] Review Firestore usage.
+[ ] Review failed writes.
+[ ] Review customer queries.
+[ ] Review payment records.
+[ ] Fix urgent UI issues.
+
+
+20. MAINTENANCE WORKFLOW
+------------------------
+
+Daily:
+
+1. Check admin queries.
+2. Check new orders.
+3. Check payment status.
+4. Check inventory alerts.
+
+Weekly:
+
+1. Review Firebase usage.
+2. Review customer feedback.
+3. Review failed/abandoned checkout reports if tracking exists.
+4. Check broken images.
+5. Check admin notifications.
+
+Monthly:
+
+1. Update dependencies.
+2. Run build.
+3. Run lint and clean new issues.
+4. Review Firestore rules.
+5. Backup/export important data.
+6. Review product catalog.
+7. Review SEO performance.
+
+Quarterly:
+
+1. Security review.
+2. Payment workflow review.
+3. Performance audit.
+4. Accessibility audit.
+5. UX improvements.
+6. Admin workflow improvements.
+
+
+21. BACKUP AND RECOVERY
+-----------------------
+
+Recommended backups:
+
+1. Export Firestore regularly.
+2. Keep product data backups.
+3. Keep order/payment exports.
+4. Keep admin user list secure.
+5. Backup public media assets.
+
+Recovery plan:
+
+1. Identify broken release.
+2. Roll back frontend deployment.
+3. Restore Firestore rules if needed.
+4. Avoid deleting customer order data.
+5. Communicate downtime if public site is affected.
+
+
+22. FUTURE PRODUCTION IMPROVEMENTS
+----------------------------------
+
+High priority:
+
+1. Add backend/Cloud Function for Razorpay order creation and signature verification.
+2. Add dedicated payments collection.
+3. Add order id generator with readable order numbers.
+4. Add email notification for customer order confirmation.
+5. Add email notification for admin reply.
+6. Add admin analytics based on live data.
+7. Add coupon validation.
+8. Add inventory decrement on paid order.
+9. Add order cancellation/refund workflow.
+10. Add Firestore indexes where required.
+
+Medium priority:
+
+1. Add Playwright E2E tests.
+2. Add unit tests for lib functions.
+3. Add image optimization.
+4. Add product structured data.
+5. Add sitemap.
+6. Add legal pages.
+7. Add responsive polish for all admin pages.
+8. Add error monitoring.
+
+Long-term:
+
+1. Move to SSR/prerendering for better SEO.
+2. Add CMS for content pages.
+3. Add real shipping integration.
+4. Add stock reservation.
+5. Add customer support ticket system.
+6. Add role-based admin permissions.
+
+
+23. CURRENT IMPORTANT FILES
+---------------------------
+
+Customer notification bell:
+
+frontend/src/user/components/UserNotificationBell.jsx
+
+Home navbar:
+
+frontend/src/user/components/Navbar.jsx
+
+Checkout:
+
+frontend/src/user/pages/CheckoutScreen.jsx
+
+Account:
+
+frontend/src/user/pages/Account.jsx
+
+Contact:
+
+frontend/src/pages/Contact.jsx
+
+Admin queries:
+
+frontend/src/admin/pages/Queries.jsx
+
+Admin payments:
+
+frontend/src/admin/pages/Payments.jsx
+
+Shared admin/customer store helpers:
+
+frontend/src/lib/adminStore.js
+
+User order helpers:
+
+frontend/src/lib/userOrders.js
+
+Firestore rules:
+
+frontend/firestore.rules
+
+Navbar styling:
+
+frontend/src/styles/startup-premium.css
+
+
+24. FINAL PRODUCTION READINESS SUMMARY
+--------------------------------------
+
+The Spice Root website workflow is production-oriented in structure and behavior:
+
+1. Customers can browse, buy through test Razorpay checkout, and track orders.
+2. Orders are saved only after payment success in the current test workflow.
+3. Admin can see orders, payments, and paid revenue.
+4. Contact Us queries support admin replies.
+5. Users receive visible top-bar notifications for unread admin replies.
+6. Notifications clear after reading.
+7. Firestore rules constrain important writes.
+8. Admin routes are protected.
+
+Before accepting real payments, the project must add server-side Razorpay verification.
+Until then, Razorpay must remain in development/test mode only.
+
+End of document.
